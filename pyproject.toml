@@ -1,0 +1,15 @@
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py313"
+exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I", "UP", "DJ"]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint.per-file-ignores]
+"apps/core/settings/*" = ["F401", "F403", "F405", "E501"]
