@@ -12,4 +12,4 @@ fixable = ["ALL"]
 quote-style = "double"
 
 [tool.ruff.lint.per-file-ignores]
-"apps/core/settings/*" = ["F401", "F403", "F405", "E501"]
+"apps/config/settings/*" = ["F401", "F403", "F405", "E501"]
