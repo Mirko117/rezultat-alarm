@@ -27,9 +27,9 @@ class SchoolClass(models.Model):
 
 class Exam(models.Model):
     name = models.CharField(max_length=100)
-    date = models.DateField()
-    time = models.TimeField()
-    classroom = models.CharField(max_length=100)
+    date = models.DateField(null=True, blank=True)
+    time = models.TimeField(null=True, blank=True)
+    classroom = models.CharField(max_length=100, blank=True, default="")
     results_available = models.BooleanField(default=False)
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE, related_name="exams")
 
@@ -38,7 +38,7 @@ class Exam(models.Model):
 
 
 class PageSnapshot(models.Model):
-    page_hash = models.BinaryField()
+    page_hash = models.CharField(max_length=64, blank=True, default="")
     fetched_at = models.DateTimeField(auto_now=True)
     major = models.ForeignKey(Major, on_delete=models.CASCADE, related_name="snapshots")
 
