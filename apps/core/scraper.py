@@ -76,6 +76,26 @@ def scrape_from_major(major: Major):
                     exam_date = cells[1].text.strip()
                     exam_time_and_classroom = cells[2].text.strip()
 
+                    exam_code = cells[3].find_next("a")
+                    if exam_code:
+                        # RezultatiRoka17393.htm -> 17393
+                        exam_code = str(exam_code["href"])
+                        exam_code = re.search(r"\d+", exam_code)
+                        exam_code = exam_code.group(0) if exam_code else None
+
+                    if not exam_code:
+                        print(
+                            f"Warning: No exam code found for {exam_name} in {class_name}."
+                            " Skipping."
+                        )
+                        continue
+
+                        # Right now we are skipping exams without code because we have no way to
+                        # identify them in the database and they are not that important anyway,
+                        # but maybe in the future we can add unique constraint to the records with
+                        # no code and identify them by their name, date and time or something like
+                        # that
+
                     # Check if the exam has results available
                     exam_results = cells[3].find_next("img")
                     if exam_results:
@@ -120,9 +140,10 @@ def scrape_from_major(major: Major):
                     # Check if the exam already exists in the database
                     exams = class_.exams.order_by("-date", "-time")  # type: ignore
 
-                    if not exams.filter(name=exam_name).exists():
+                    if not exams.filter(code=exam_code).exists():
                         Exam.objects.create(
                             name=exam_name,
+                            code=exam_code,
                             date=exam_date,
                             time=exam_time,
                             classroom=exam_classroom,
@@ -131,14 +152,16 @@ def scrape_from_major(major: Major):
                         )
                     else:
                         # Check is there are any differences
-                        current_exam = exams.filter(name=exam_name).first()
+                        current_exam = exams.filter(code=exam_code).first()
 
                         if (
-                            current_exam.date != exam_date
+                            current_exam.name != exam_name
+                            or current_exam.date != exam_date
                             or current_exam.time != exam_time
                             or current_exam.classroom != exam_classroom
                             or current_exam.results_available != exam_results
                         ):
+                            current_exam.name = exam_name
                             current_exam.date = exam_date
                             current_exam.time = exam_time
                             current_exam.classroom = exam_classroom

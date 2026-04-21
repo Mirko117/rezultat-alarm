@@ -27,6 +27,7 @@ class SchoolClass(models.Model):
 
 class Exam(models.Model):
     name = models.CharField(max_length=100)
+    code = models.CharField(max_length=10, unique=True, blank=False, null=False)
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True)
     classroom = models.CharField(max_length=100, blank=True, default="")
