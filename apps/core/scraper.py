@@ -1,4 +1,5 @@
 import hashlib
+import logging
 import re
 from datetime import date, time
 
@@ -6,6 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 
 from .models import Exam, Major, PageSnapshot, Professor, SchoolClass
+
+logger = logging.getLogger(__name__)
 
 
 def scrape_from_major(major: Major):
@@ -18,13 +21,13 @@ def scrape_from_major(major: Major):
     last_snapshot: PageSnapshot = major.snapshots.order_by("-fetched_at").first()  # type: ignore
 
     if not last_snapshot:
-        print(f"No previous snapshot found for {major.name}. Creating new snapshot.")
+        logger.info(f"No previous snapshot found for {major.name}. Creating new snapshot.")
         PageSnapshot.objects.create(major=major, page_hash=page_hash)
     elif last_snapshot.page_hash and last_snapshot.page_hash == page_hash:
-        print(f"No changes detected for {major.name}. Skipping.")
+        logger.info(f"No changes detected for {major.name}. Skipping.")
         return
     else:
-        print(f"Changes detected for {major.name}. Updating database.")
+        logger.info(f"Changes detected for {major.name}. Updating database.")
         PageSnapshot.objects.create(major=major, page_hash=page_hash)
 
     soup = BeautifulSoup(html, "lxml")
@@ -84,7 +87,7 @@ def scrape_from_major(major: Major):
                         exam_code = exam_code.group(0) if exam_code else None
 
                     if not exam_code:
-                        print(
+                        logger.warning(
                             f"Warning: No exam code found for {exam_name} in {class_name}."
                             " Skipping."
                         )
