@@ -164,11 +164,9 @@ def scrape_from_major(major: Major):
 
             # Same as above
             # Just this time it splits it in time and classroom
-            # Example from site: 14.45, 352 Učilnica
+            # Example from site: 14.45, 352 Učilnica -> ["14.45", "352 Učilnica"]
             split_symbol = ", " if ", " in exam_time_and_classroom else ","
             exam_time_and_classroom = exam_time_and_classroom.split(split_symbol)
-
-            # TODO: Finish further validation from here to the end
 
             exam_time = ""
             exam_classroom = ""
@@ -178,12 +176,23 @@ def scrape_from_major(major: Major):
                 exam_classroom = ""
             elif len(exam_time_and_classroom) >= 2:
                 exam_time = exam_time_and_classroom[0]
+                # I have seen some exams with multiple classrooms for some reason
                 exam_classroom = ", ".join(exam_time_and_classroom[1:])
 
             if exam_time != "":
-                # Convert to ISO format
+                # Convert to ISO format (HH:MM)
                 exam_time = exam_time.replace(".", ":")
-                exam_time = time.fromisoformat(exam_time)
+
+                is_valid_time_format = re.match(r"\d{2}:\d{2}", exam_time)
+
+                if not is_valid_time_format:
+                    logger.warning(
+                        f"Exam time {exam_time} for {exam_name} in {class_name} is not in the"
+                        " correct format. Setting to None."
+                    )
+                    exam_time = None
+                else:
+                    exam_time = time.fromisoformat(exam_time)
             else:
                 exam_time = None
 
@@ -206,9 +215,10 @@ def scrape_from_major(major: Major):
                     results_available=exam_results,
                     school_class=class_,
                 )
+                logger.info(f"New exam {exam_name} in {class_name} has been added to the database.")
             else:
                 # Check is there are any differences
-                current_exam = exams.filter(code=exam_code).first()
+                current_exam: Exam = exams.filter(code=exam_code).first()
 
                 if (
                     current_exam.name != exam_name
