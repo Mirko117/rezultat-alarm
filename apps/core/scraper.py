@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 from .models import Exam, Major, PageSnapshot, Professor, SchoolClass
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django")
 
 
 def scrape_from_major(major: Major):
@@ -170,6 +170,8 @@ def scrape_from_major(major: Major):
                             current_exam.classroom = exam_classroom
                             current_exam.results_available = exam_results
                             current_exam.save()
+
+                            logger.info(f"Exam {exam_name} in {class_name} has been updated.")
 
                             # TODO: Send Email about the change
                             # TODO: Maybe send email to admin if error occurs
