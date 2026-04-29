@@ -1,13 +1,16 @@
 asgiref==3.11.1
 beautifulsoup4==4.14.3
 certifi==2026.2.25
+cffi==2.0.0
 charset-normalizer==3.4.7
+cryptography==47.0.0
 Django==6.0.4
 idna==3.11
 lxml==6.1.0
 psycopg==3.3.3
 psycopg-binary==3.3.3
 psycopg-pool==3.3.0
+pycparser==3.0
 python-decouple==3.8
 requests==2.33.1
 ruff==0.15.11

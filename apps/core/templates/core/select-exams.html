@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    table {
+        border-collapse: collapse;
+        width: 90%;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        text-align: left;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+
+
+<h1>Izberi teste za katere želiš prejemati obvestila</h1>
+
+<form method="post" action="{% url 'subscribe' %}">
+    {% csrf_token %}
+
+    {% for class_ in classes %}
+
+    <div>
+        <h2>{{ class_.name }}</h2>
+        <h3>{{ class_.professor.full_name }}</h3>
+
+        <table>
+            <tr>
+                <th>Test</th>
+                <th>Datum in ura</th>
+                <th>Učilnica</th>
+                <th>Obvesti me</th>
+            </tr>
+
+            {% for exam in exams %}
+            {% if exam.school_class == class_ %}
+            <tr>
+                <td>{{ exam.name }}</td>
+                <td>{{ exam.date }} {{ exam.time }}</td>
+                <td>{{ exam.classroom }}</td>
+                <td><input type="checkbox" name="exam_ids" value="{{ exam.id }}"></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
+
+    <hr>
+    <input type="email" placeholder="mail@gmail.com" name="email" required>
+    <input type="submit" value="Prijavi me">
+
+</form>
+
+
+{% endblock content %}

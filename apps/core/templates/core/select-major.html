@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Izberi svojo smer</h1>
+<ul>
+    {% for major in majors %}
+    <li><a href="{% url 'select_exams' major.id %}">{{ major.name }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}
