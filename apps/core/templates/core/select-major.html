@@ -2,11 +2,13 @@
 
 {% block content %}
 
-<h1>Izberi svojo smer</h1>
-<ul>
+<main id="select-major-page">
+    <h1>Izberi svojo smer</h1>
+    <ul>
     {% for major in majors %}
-    <li><a href="{% url 'select_exams' major.id %}">{{ major.name }}</a></li>
+        <li><a href="{% url 'select_exams' major.id %}">{{ major.name }}</a></li>
     {% endfor %}
-</ul>
+    </ul>
+</main>
 
 {% endblock content %}

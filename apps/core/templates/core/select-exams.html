@@ -1,65 +1,55 @@
 {% extends "base.html" %}
 
-{% block head %}
-<style>
-    table {
-        border-collapse: collapse;
-        width: 90%;
-    }
-
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-    }
-
-    th {
-        background-color: #f2f2f2;
-        text-align: left;
-    }
-</style>
-{% endblock head %}
-
 {% block content %}
 
+<main id="select-exams-page" class="container">
+    <h1>Izberi roke za katere želiš prejemati obvestila</h1>
 
-<h1>Izberi teste za katere želiš prejemati obvestila</h1>
+    <p>Prosimo, izberi roke za katere želiš prejemati obvestila o rezultatih.</p>
+    <p>Ko bodo rezultati na voljo, ti bomo poslali email.</p>
+    <p>Ko pride do drugih sprememb (npr. sprememba datuma izpita), ti bomo prav tako poslali email.</p>
+    <p>Rok lahko izbereš tako da klikneš na checkbox v zadnjem stolpcu.</p>
+    <p>Na koncu vpiši svoj email naslov in klikni "Naroči me".</p>
 
-<form method="post" action="{% url 'subscribe' %}">
-    {% csrf_token %}
+    <form method="post" action="{% url 'subscribe' %}">
+        {% csrf_token %}
 
-    {% for class_ in classes %}
+        {% for class_ in classes %}
 
-    <div>
-        <h2>{{ class_.name }}</h2>
-        <h3>{{ class_.professor.full_name }}</h3>
+        <div>
+            <h2>{{ class_.name }}</h2>
+            <h3>{{ class_.professor.full_name }}</h3>
 
-        <table>
-            <tr>
-                <th>Test</th>
-                <th>Datum in ura</th>
-                <th>Učilnica</th>
-                <th>Obvesti me</th>
-            </tr>
+            <table>
+                <tr>
+                    <th>Rok</th>
+                    <th>Datum in ura</th>
+                    <th>Učilnica</th>
+                    <th>Obvesti me</th>
+                </tr>
 
-            {% for exam in exams %}
-            {% if exam.school_class == class_ %}
-            <tr>
-                <td>{{ exam.name }}</td>
-                <td>{{ exam.date }} {{ exam.time }}</td>
-                <td>{{ exam.classroom }}</td>
-                <td><input type="checkbox" name="exam_ids" value="{{ exam.id }}"></td>
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </table>
-    </div>
-    {% endfor %}
+                {% for exam in exams %}
+                {% if exam.school_class == class_ %}
+                <tr>
+                    <td>{{ exam.name }}</td>
+                    <td>{{ exam.date|date:"d.m.Y" }} {{ exam.time|time:"H:i" }}</td>
+                    <td>{{ exam.classroom }}</td>
+                    {% if exam.results_available %}
+                    <td><a href="https://a3.sckr.si/EviVss/RezultatiRoka{{ exam.code }}.htm">Rezultati</a></td>
+                    {% else %}
+                    <td><input type="checkbox" name="exam_ids" value="{{ exam.id }}"></td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+        {% endfor %}
 
-    <hr>
-    <input type="email" placeholder="mail@gmail.com" name="email" required>
-    <input type="submit" value="Prijavi me">
+        <input type="email" placeholder="mail@gmail.com" name="email" required>
+        <input type="submit" value="Naroči me">
 
-</form>
-
+    </form>
+</main>
 
 {% endblock content %}

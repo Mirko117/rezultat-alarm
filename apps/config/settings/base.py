@@ -128,6 +128,11 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# Global static files directory
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Directory where collectstatic will collect static files for production
+STATIC_ROOT = BASE_DIR.parent / "staticfiles"
 
 # Logging configuration
 # https://docs.djangoproject.com/en/6.0/topics/logging/
