@@ -22,7 +22,7 @@ logger = logging.getLogger("django")
 
 def scrape_from_major(major: Major):
     try:
-        response = requests.get(major.url)
+        response = requests.get(major.url, timeout=60)
         response.encoding = "windows-1250"
 
         html = response.text
