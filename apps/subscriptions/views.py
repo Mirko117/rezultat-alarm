@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 import logging
 
 from cryptography.fernet import Fernet
@@ -5,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 
 from subscriptions.models import Student, StudentExamSubscription
 
@@ -13,51 +16,58 @@ from .models import Exam
 logger = logging.getLogger("django")
 
 
+@require_POST
 def subscribe(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        exam_ids = request.POST.getlist("exam_ids")
+    email = request.POST.get("email")
+    exam_ids = request.POST.getlist("exam_ids")
 
-        # Validate email
-        try:
-            validate_email(email)
-        except ValidationError:
-            return HttpResponse("Invalid email address", status=400)
+    email = email.strip().lower() if email else ""
 
-        # Chekc if exams were selected
-        if not exam_ids or len(exam_ids) == 0:
-            return HttpResponse("No exams selected", status=400)
+    # Validate email
+    try:
+        validate_email(email)
+    except ValidationError:
+        return HttpResponse("Invalid email address", status=400)
 
-        # Check if exams are integers
-        try:
-            exam_ids = [int(e) for e in exam_ids]
-        except ValueError:
-            return HttpResponse("Invalid exam IDs", status=400)
+    # Check if exams were selected
+    if not exam_ids or len(exam_ids) == 0:
+        return HttpResponse("No exams selected", status=400)
 
-        try:
-            # Check if exams exist
-            exams = Exam.objects.filter(id__in=exam_ids)
-            if exams.count() != len(exam_ids):
-                return HttpResponse("One or more exams not found", status=400)
+    # Check if exams are integers
+    try:
+        exam_ids = [int(e) for e in exam_ids]
+    except ValueError:
+        return HttpResponse("Invalid exam IDs", status=400)
 
-            # TODO: Right now fernet generates unique key every time, because of that also generate
-            #       hash of the email and store it in the database, so we can check if the email is
-            #       already subscribed to the exam without decrypting it every time.
+    try:
+        # Check if exams exist
+        exams = Exam.objects.filter(id__in=exam_ids)
+        if exams.count() != len(exam_ids):
+            return HttpResponse("One or more exams not found", status=400)
 
-            f = Fernet(settings.FERNET_KEY)
+        f = Fernet(settings.FERNET_KEY)
 
-            encrypted_email = f.encrypt(email.encode()).decode()
+        email_encrypted = f.encrypt(email.encode()).decode()
 
-            student, _ = Student.objects.get_or_create(email_encrypted=encrypted_email)
+        # Since fernet encryption is non-deterministic (every time it generates a unique key),
+        # we need to hash the email for lookup
+        email_hash = hmac.new(
+            settings.SECRET_KEY.encode(), email.encode(), hashlib.sha256
+        ).hexdigest()
 
-            for exam in exams:
-                StudentExamSubscription.objects.create(student=student, exam=exam)
+        # Use hash for lookup
+        student, _ = Student.objects.get_or_create(
+            email_hash=email_hash, defaults={"email_encrypted": email_encrypted}
+        )
 
-            return HttpResponse("Uspesno ste se prijavili na obvestila za izpite!")
-        except Exception as e:
-            logger.critical(
-                f"Error occurred while subscribing student to exams: {e}", exc_info=True
-            )
-            return HttpResponse("Something went wrong.", status=500)
-    else:
-        return HttpResponse("Invalid request method", status=400)
+        new_subscriptions = []
+        for exam in exams:
+            new_subscriptions.append(StudentExamSubscription(student=student, exam=exam))
+
+        # ignore_conflicts=True to avoid duplicate subscriptions
+        StudentExamSubscription.objects.bulk_create(new_subscriptions, ignore_conflicts=True)
+
+        return HttpResponse("Uspesno ste se prijavili na obvestila za izpite!")
+    except Exception as e:
+        logger.critical(f"Error occurred while subscribing student to exams: {e}", exc_info=True)
+        return HttpResponse("Something went wrong.", status=500)
