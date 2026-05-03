@@ -1,9 +1,11 @@
 from django.shortcuts import render
+from subscriptions.tasks import test
 
 from .models import Exam, Major, SchoolClass
 
 
 def index(request):
+    test.delay()
     return render(request, "core/index.html")
 
 

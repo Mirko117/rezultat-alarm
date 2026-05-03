@@ -7,10 +7,41 @@ services:
       - POSTGRES_DB=${POSTGRES_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql
     ports:
       - "${POSTGRES_PORT}:5432"
+    networks:
+      - default
+
+  redis:
+    image: redis:8.6.2
+    container_name: redis
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - default
+
+  celery:
+    build: .
+    container_name: celery
+    restart: always
+    env_file:
+      - .env
+      - .env.docker
+    command: celery --workdir apps/ -A config worker --loglevel=info
     volumes:
-        - postgres-data:/var/lib/postgresql
+      - .:/app
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - default
 
 volumes:
   postgres-data:
+
+networks:
+  default:
+    driver: bridge
