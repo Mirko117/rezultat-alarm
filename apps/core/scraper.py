@@ -6,6 +6,7 @@ from datetime import date, time
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from subscriptions.emails import email_on_exam_change
 
 from .models import Exam, Major, PageSnapshot, Professor, SchoolClass
 
@@ -234,6 +235,8 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
     else:
         exam_results = False
 
+    # TODO: Shrani opombe
+
     # Check if the exam already exists in the database
     exams = class_.exams.order_by("-date", "-time")  # type: ignore
 
@@ -259,6 +262,18 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
             or current_exam.classroom != exam_classroom
             or current_exam.results_available != exam_results
         ):
+            # Never save old exam details because we need them to send email about the change
+            old_exam = Exam(
+                name=current_exam.name,
+                code=current_exam.code,
+                date=current_exam.date,
+                time=current_exam.time,
+                classroom=current_exam.classroom,
+                results_available=current_exam.results_available,
+                school_class=current_exam.school_class,
+            )
+
+            # Update the exam details
             current_exam.name = exam_name
             current_exam.date = exam_date
             current_exam.time = exam_time
@@ -267,6 +282,12 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
             current_exam.save()
 
             logger.info(f"Exam {exam_name} in {class_name} has been updated.")
+            try:
+                email_on_exam_change(old_exam, current_exam)
+            except Exception as e:
+                logger.exception(
+                    f"Error occurred while sending email about exam change for {exam_name} in"
+                    f" {class_name}: {e}"
+                )
 
-            # TODO: Send Email about the change
             # TODO: Maybe send email to admin if error occurs

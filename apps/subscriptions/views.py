@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import logging
 
+from core.models import Exam
 from cryptography.fernet import Fernet
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -9,9 +10,7 @@ from django.core.validators import validate_email
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 
-from subscriptions.models import Student, StudentExamSubscription
-
-from .models import Exam
+from .models import Student, StudentExamSubscription
 
 logger = logging.getLogger("django")
 
