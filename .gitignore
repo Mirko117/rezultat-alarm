@@ -20,3 +20,6 @@ staticfiles/
 
 # Pytest stuff:
 .pytest_cache/
+
+# Modified mock server files:
+mock_server/files/rezultati.htm
