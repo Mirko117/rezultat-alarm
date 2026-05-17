@@ -32,6 +32,7 @@ class MockServerRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(content.encode("windows-1250"))
 
 
-server = HTTPServer(("localhost", 8001), MockServerRequestHandler)
-print("Mock server serving on http://localhost:8001")
-server.serve_forever()
+if __name__ == "__main__":
+    server = HTTPServer(("localhost", 8001), MockServerRequestHandler)
+    print("Mock server running on http://localhost:8001")
+    server.serve_forever()
