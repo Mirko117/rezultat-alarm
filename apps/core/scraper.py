@@ -263,6 +263,8 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
             or current_exam.results_available != exam_results
         ):
             # Never save old exam details because we need them to send email about the change
+            # Old exam does not exist in the database, it is just a copy of the current exam before
+            # we update it with new details
             old_exam = Exam(
                 name=current_exam.name,
                 code=current_exam.code,
@@ -283,7 +285,11 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
 
             logger.info(f"Exam {exam_name} in {class_name} has been updated.")
             try:
+                logger.info(f"Sending email about change in exam {exam_name} in {class_name}.")
                 email_on_exam_change(old_exam, current_exam)
+                logger.info(
+                    f"Email about change in exam {exam_name} in {class_name} has been sent."
+                )
             except Exception as e:
                 logger.exception(
                     f"Error occurred while sending email about exam change for {exam_name} in"
