@@ -1,3 +1,3 @@
-Prišlo je do spremembe pri predmetu {old.school_class.name} - {old.name}.
+Prišlo je do spremembe pri predmetu {{ old.school_class.name }}, rok {{ old.name }}.
 
-Več na {new_exam.school_class.major.url}
+Povezava do spletne za rezultate: {{ new.school_class.major.url }}

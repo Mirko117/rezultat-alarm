@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from subscriptions.emails import email_on_exam_change
+from subscriptions.models import StudentExamSubscription
 
 from .models import Exam, Major, PageSnapshot, Professor, SchoolClass
 
@@ -284,6 +285,15 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
             current_exam.save()
 
             logger.info(f"Exam {exam_name} in {class_name} has been updated.")
+
+            # Check if there are any subscription for this exam
+            if not StudentExamSubscription.objects.filter(exam=current_exam).exists():
+                logger.info(
+                    f"No subscriptions for exam {exam_name} in {class_name}. "
+                    f"Skipping email about change."
+                )
+                return
+
             try:
                 logger.info(f"Sending email about change in exam {exam_name} in {class_name}.")
                 email_on_exam_change(old_exam, current_exam)
