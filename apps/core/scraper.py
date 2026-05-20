@@ -136,8 +136,8 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
     exam_name = cells[0].text.strip()
     exam_date = cells[1].text.strip()
     exam_time_and_classroom = cells[2].text.strip()
-    exam_results = cells[3].find_next("img")
-    exam_code = cells[3].find_next("a")
+    exam_results = cells[3].find("img")
+    exam_code = cells[3].find("a")
 
     # First do exam_code ckecks because code is mandatory
 
