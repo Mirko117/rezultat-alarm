@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<main id="subscription-success-page">
+    <h1>Uspešna prijava</h1>
+    <p>Uspešno ste se prijavili na obvestila o rezultatih izpitov.</p>
+    <p>Ko bodo rezultati na voljo, boste prejeli email.</p>
+    <p>Ko pride do drugih sprememb (npr. sprememba datuma izpita), boste prav tako prejeli email.</p>
+    <a href="{% url 'index' %}">Nazaj na začetno stran</a>
+</main>
+
+{% endblock %}

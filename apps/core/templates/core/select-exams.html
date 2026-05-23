@@ -37,7 +37,7 @@
                     {% if exam.results_available %}
                     <td><a href="https://a3.sckr.si/EviVss/RezultatiRoka{{ exam.code }}.htm">Rezultati</a></td>
                     {% else %}
-                    <td><input type="checkbox" name="exam_ids" value="{{ exam.id }}"></td>
+                    <td><input type="checkbox" name="exam_ids" value="{{ exam.id }}" class="notify-checkbox"></td>
                     {% endif %}
                 </tr>
                 {% endif %}

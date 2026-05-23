@@ -31,7 +31,7 @@ FERNET_KEY = config("FERNET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = str(config("DJANGO_ALLOWED_HOSTS", default="localhost, 127.0.0.1")).split(",")
+ALLOWED_HOSTS = str(config("DJANGO_ALLOWED_HOSTS", default="localhost, 127.0.0.1")).split(", ")
 
 
 # Application definition

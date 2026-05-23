@@ -24,3 +24,7 @@ def select_exams(request, major_id):
     }
 
     return render(request, "core/select-exams.html", context)
+
+
+def subscription_success(request):
+    return render(request, "core/subscription-success.html")

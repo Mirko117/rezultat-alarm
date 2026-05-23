@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
 from .models import Student, StudentExamSubscription
@@ -66,7 +67,7 @@ def subscribe(request):
         # ignore_conflicts=True to avoid duplicate subscriptions
         StudentExamSubscription.objects.bulk_create(new_subscriptions, ignore_conflicts=True)
 
-        return HttpResponse("Uspesno ste se prijavili na obvestila za izpite!")
+        return redirect("subscription_success")
     except Exception as e:
         logger.critical(f"Error occurred while subscribing student to exams: {e}", exc_info=True)
         return HttpResponse("Something went wrong.", status=500)
