@@ -15,6 +15,10 @@ def email_on_exam_change(old_exam: Exam, new_exam: Exam):
                          the database.
     """
 
+    # TODO: Figure out what changed and send email accordingly.
+    # For example, if the results were published, send link to the results page.
+    # If other changed occurred, send email with the details of the change and link to the exam page
+
     # Render email content
     rendered_email = render_to_string(
         "emails/changed.txt",
@@ -26,7 +30,7 @@ def email_on_exam_change(old_exam: Exam, new_exam: Exam):
     subject = f"Sprememba pri predmetu {old_exam.school_class.name} - {old_exam.name}"
 
     # Send email asynchronously using Celery task
-    email_on_exam_change_task.delay(
+    email_on_exam_change_task.delay(  # type: ignore (some Pylance issue)
         subject=subject,
         message=rendered_email,
         exam_id=new_exam.pk,
