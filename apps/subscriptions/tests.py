@@ -4,11 +4,11 @@ from datetime import date, time
 from unittest.mock import patch
 
 import pytest
+from core.models import Exam, Major, Professor, SchoolClass
 from cryptography.fernet import Fernet
 from django.conf import settings
 from django.urls import reverse
 
-from core.models import Exam, Major, Professor, SchoolClass
 from subscriptions.emails import email_on_exam_change
 from subscriptions.models import Student, StudentExamSubscription
 

@@ -28,7 +28,7 @@ def _require_mock_server():
     try:
         response = requests.get("http://localhost:8001", timeout=5)
         response.raise_for_status()
-    except Exception as exc:
+    except Exception:
         pytest.fail(
             "Mock server must be running on http://localhost:8001 with a valid rezultati.htm",
             pytrace=False,
