@@ -27,10 +27,14 @@ services:
     build: .
     container_name: celery
     restart: always
+    env_file:
+      - .env
     environment:
       # Those env variables must point to docker service names, not localhost
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=${CELERY_DJANGO_SETTINGS_MODULE}
     command: celery --workdir apps/ -A config worker --loglevel=info
     volumes:
       - .:/app
