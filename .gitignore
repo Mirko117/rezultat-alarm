@@ -6,7 +6,7 @@ __pycache__/
 # Environments
 .env
 .env.docker
-venv/
+.venv
 
 # Django stuff:
 *.log

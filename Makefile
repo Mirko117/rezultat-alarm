@@ -6,6 +6,9 @@ up:
 down:
 	$(COMPOSE) down
 
+build:
+	$(COMPOSE) up -d --build
+
 restart:
 	$(COMPOSE) down
 	$(COMPOSE) up -d
