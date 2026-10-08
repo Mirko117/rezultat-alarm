@@ -3,7 +3,7 @@ from django.db import models
 
 class Major(models.Model):
     name = models.CharField(max_length=100)
-    url = models.URLField()
+    url = models.URLField(unique=True)
 
     def __str__(self):
         return self.name
@@ -19,7 +19,9 @@ class Professor(models.Model):
 class SchoolClass(models.Model):
     name = models.CharField(max_length=100)
     major = models.ForeignKey(Major, on_delete=models.CASCADE, related_name="classes")
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="classes")
+    professor = models.ForeignKey(
+        Professor, null=True, on_delete=models.SET_NULL, related_name="classes"
+    )
 
     def __str__(self):
         return self.name
@@ -27,11 +29,12 @@ class SchoolClass(models.Model):
 
 class Exam(models.Model):
     name = models.CharField(max_length=100)
-    code = models.CharField(max_length=10, unique=True, blank=False, null=False)
+    code = models.CharField(max_length=10, unique=True, blank=False)
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True)
     classroom = models.CharField(max_length=100, blank=True, default="")
     results_available = models.BooleanField(default=False)
+    # Save comment too (here)
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE, related_name="exams")
 
     def __str__(self):

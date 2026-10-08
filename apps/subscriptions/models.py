@@ -11,8 +11,8 @@ class Student(models.Model):
 
 
 class StudentExamSubscription(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="subscriptions")
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="subscribers")
     subscribed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
