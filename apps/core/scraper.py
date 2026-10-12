@@ -138,6 +138,7 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
     exam_time_and_classroom = cells[2].text.strip()
     exam_results = cells[3].find("img")
     exam_code = cells[3].find("a")
+    exam_comment = cells[3].text.strip()
 
     # First do exam_code ckecks because code is mandatory
 
@@ -236,8 +237,6 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
     else:
         exam_results = False
 
-    # TODO: Shrani opombe
-
     # Check if the exam already exists in the database
     exams = class_.exams.order_by("-date", "-time")  # type: ignore
 
@@ -249,6 +248,7 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
             time=exam_time,
             classroom=exam_classroom,
             results_available=exam_results,
+            comment=exam_comment,
             school_class=class_,
         )
         logger.info(f"New exam {exam_name} in {class_name} has been added to the database.")
@@ -262,6 +262,7 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
             or current_exam.time != exam_time
             or current_exam.classroom != exam_classroom
             or current_exam.results_available != exam_results
+            or current_exam.comment != exam_comment
         ):
             # Never save old exam details because we need them to send email about the change
             # Old exam does not exist in the database, it is just a copy of the current exam before
@@ -273,6 +274,7 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
                 time=current_exam.time,
                 classroom=current_exam.classroom,
                 results_available=current_exam.results_available,
+                comment=current_exam.comment,
                 school_class=current_exam.school_class,
             )
 
@@ -282,6 +284,7 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
             current_exam.time = exam_time
             current_exam.classroom = exam_classroom
             current_exam.results_available = exam_results
+            current_exam.comment = exam_comment
             current_exam.save()
 
             logger.info(f"Exam {exam_name} in {class_name} has been updated.")

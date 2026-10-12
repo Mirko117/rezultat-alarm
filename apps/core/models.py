@@ -34,7 +34,7 @@ class Exam(models.Model):
     time = models.TimeField(null=True, blank=True)
     classroom = models.CharField(max_length=100, blank=True, default="")
     results_available = models.BooleanField(default=False)
-    # Save comment too (here)
+    comment = models.CharField()
     school_class = models.ForeignKey(SchoolClass, on_delete=models.CASCADE, related_name="exams")
 
     def __str__(self):
