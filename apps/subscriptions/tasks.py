@@ -19,9 +19,10 @@ logger = get_task_logger(__name__)
     max_retries=3,
     default_retry_delay=60 * 5,  # Retry after 5 minutes
 )
-def email_on_exam_change_task(self, subject: str, message: str, exam_id: int) -> None:
+def email_on_exam_change_task(self, subject: str, message: str, exam_id: int) -> int:
     """
     Send an email to the users that are subscribed to the exam about the change in the exam details.
+    Returns number of successfully sent emails.
     """
 
     # Get encrypted email addresses of students subscribed to the exam
@@ -31,7 +32,7 @@ def email_on_exam_change_task(self, subject: str, message: str, exam_id: int) ->
 
     if not encrypted_emails:
         logger.info(f"No subscribers found for exam {exam_id}. No email will be sent.")
-        return
+        return 0
 
     recipients = []
 
@@ -46,10 +47,10 @@ def email_on_exam_change_task(self, subject: str, message: str, exam_id: int) ->
 
     if not recipients:
         logger.info(f"No valid email addresses found for exam {exam_id}. No email will be sent.")
-        return
+        return 0
 
     try:
-        send_mass_mail(
+        return send_mass_mail(
             [
                 (
                     subject,
