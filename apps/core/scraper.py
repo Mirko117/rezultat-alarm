@@ -310,3 +310,45 @@ def _scrape_class_exam(class_: SchoolClass, class_name: str, exam_row: Tag):
                 )
 
             # TODO: Maybe send email to admin if error occurs
+
+
+def scrape_major_list():
+    try:
+        base_url = "https://a3.sckr.si/EviVss/"
+        request_url = base_url + "KazaloIzpitnihRokov.htm"
+
+        response = requests.get(request_url, timeout=60)
+        response.encoding = "windows-1250"
+
+        html = response.text
+
+        soup = BeautifulSoup(html, "lxml")
+
+        ul = soup.find("ul")
+
+        if ul is None:
+            logger.error("Major list not found!")
+            return
+
+        majors = ul.find_all("a")
+
+        if len(majors) == 0:
+            logger.error("Major list is empty!")
+            return
+
+        for major in majors:
+            href = str(major["href"])
+            name = major.text.strip()
+
+            url = base_url + href
+
+            _, created = Major.objects.get_or_create(url=url, defaults={"name": name})
+
+            if created:
+                logger.info(f"New major {name} has been added to the database.")
+            else:
+                logger.info(f"Major with url {url} already exists. Skipping.")
+
+    except Exception as e:
+        logger.critical(f"Error occurred while scraping major list: {e}", exc_info=True)
+        return
