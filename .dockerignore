@@ -1,9 +1,26 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[codz]
+*$py.class
+
+# Environments
+.env
+.env*
+.venv/
+
+# Git
+.git/
+.gitignore
+
+# Ruff stuff:
 .ruff_cache/
+
+# Pytest stuff:
 .pytest_cache/
-*.pyc
 
+# Django stuff:
+*.log
+staticfiles/
+
+# Mock server:
 mock_server/
-
-.git
-.venv
