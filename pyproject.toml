@@ -31,7 +31,6 @@ dependencies = [
     "python-decouple>=3.8",
     "redis>=6.4.0",
     "requests>=2.34.2",
-    "ruff>=0.16.10",
     "six>=1.17.0",
     "soupsieve>=2.10",
     "sqlparse>=0.6.0",
@@ -41,6 +40,11 @@ dependencies = [
     "urllib3>=2.8.0",
     "vine>=5.1.0",
     "wcwidth>=0.7.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.4",
 ]
 
 [tool.ruff]

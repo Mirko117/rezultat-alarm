@@ -468,7 +468,6 @@ dependencies = [
     { name = "python-decouple" },
     { name = "redis" },
     { name = "requests" },
-    { name = "ruff" },
     { name = "six" },
     { name = "soupsieve" },
     { name = "sqlparse" },
@@ -478,6 +477,11 @@ dependencies = [
     { name = "urllib3" },
     { name = "vine" },
     { name = "wcwidth" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "ruff" },
 ]
 
 [package.metadata]
@@ -510,7 +514,6 @@ requires-dist = [
     { name = "python-decouple", specifier = ">=3.8" },
     { name = "redis", specifier = ">=6.4.0" },
     { name = "requests", specifier = ">=2.34.2" },
-    { name = "ruff", specifier = ">=0.16.10" },
     { name = "six", specifier = ">=1.17.0" },
     { name = "soupsieve", specifier = ">=2.10" },
     { name = "sqlparse", specifier = ">=0.6.0" },
@@ -521,6 +524,9 @@ requires-dist = [
     { name = "vine", specifier = ">=5.1.0" },
     { name = "wcwidth", specifier = ">=0.7.0" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "ruff", specifier = ">=0.17.4" }]
 
 [[package]]
 name = "ruff"
