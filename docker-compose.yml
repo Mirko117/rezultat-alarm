@@ -36,8 +36,7 @@ services:
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis
       - CELERY_BROKER_URL=redis://redis:6379/0
-      - DJANGO_SETTINGS_MODULE=${CELERY_DJANGO_SETTINGS_MODULE}
-    command: uv run celery --workdir apps/ -A config worker --loglevel=info
+    command: uv run celery -A apps.config worker --loglevel=info
     volumes:
       - .:/app
       - /app/.venv

@@ -1,5 +1,6 @@
-from core.models import Exam
 from django.db import models
+
+from apps.core.models import Exam
 
 
 class Student(models.Model):

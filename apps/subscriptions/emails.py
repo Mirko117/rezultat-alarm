@@ -1,5 +1,6 @@
-from core.models import Exam
 from django.template.loader import render_to_string
+
+from apps.core.models import Exam
 
 from .tasks import email_on_exam_change_task
 

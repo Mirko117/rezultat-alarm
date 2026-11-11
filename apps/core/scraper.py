@@ -6,8 +6,9 @@ from datetime import date, time
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from subscriptions.emails import email_on_exam_change
-from subscriptions.models import StudentExamSubscription
+
+from apps.subscriptions.emails import email_on_exam_change
+from apps.subscriptions.models import StudentExamSubscription
 
 from .models import Exam, Major, PageSnapshot, Professor, SchoolClass
 
@@ -97,7 +98,7 @@ def _scrape_majors_class(major: Major, school_class: Tag):
             class_.save()
             logger.info(
                 f"Professor updated for {class_name}."
-                f" {class_.professor.full_name} -> {professor.full_name}"
+                f" {class_.professor.full_name} -> {professor.full_name}"  # type: ignore
             )
     else:
         class_ = SchoolClass.objects.create(name=class_name, major=major, professor=professor)

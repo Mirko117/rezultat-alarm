@@ -2,8 +2,8 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from core.models import Major
-from core.scraper import scrape_from_major
+from apps.core.models import Major
+from apps.core.scraper import scrape_from_major
 
 logger = logging.getLogger("django")
 
