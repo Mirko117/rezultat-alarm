@@ -25,8 +25,30 @@ services:
     networks:
       - default
 
-  celery:
+  django:
     build: .
+    image: rezultat-alarm:latest
+    container_name: django
+    restart: always
+    env_file:
+      - .env
+    environment:
+    # Those env variables must point to docker service names, not localhost
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    entrypoint: ["/app/entrypoint.sh"]
+    command: uv run gunicorn --bind 0.0.0.0:8000 --workers 3 apps.config.wsgi:application
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - default
+    ports:
+      - "8000:8000"
+
+  celery:
+    image: rezultat-alarm:latest
     container_name: celery
     restart: always
     env_file:
@@ -37,12 +59,9 @@ services:
       - REDIS_HOST=redis
       - CELERY_BROKER_URL=redis://redis:6379/0
     command: uv run celery -A apps.config worker --loglevel=info
-    volumes:
-      - .:/app
-      - /app/.venv
     depends_on:
-      - redis
       - postgres
+      - redis
     networks:
       - default
 
