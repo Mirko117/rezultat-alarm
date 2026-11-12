@@ -30,6 +30,8 @@ services:
     image: rezultat-alarm:latest
     container_name: django
     restart: always
+    volumes:
+      - static_volume:/app/staticfiles
     env_file:
       - .env
     environment:
@@ -44,8 +46,8 @@ services:
       - redis
     networks:
       - default
-    ports:
-      - "8000:8000"
+    expose:
+      - 8000
 
   celery:
     image: rezultat-alarm:latest
@@ -65,9 +67,24 @@ services:
     networks:
       - default
 
+  nginx:
+    image: nginx:1.31.8
+    container_name: nginx
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/staticfiles:ro
+    depends_on:
+      - django
+    networks:
+      - default
+    ports:
+      - "80:80"
+
 volumes:
   postgres-data:
   redis-data:
+  static_volume:
 
 networks:
   default:
